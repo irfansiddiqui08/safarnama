@@ -27,6 +27,9 @@ window.SAFARNAMA = {
   // Optional seat line, e.g. "Only 50 seats". Leave "" for the default "Seats Limited".
   seatsText: "",
 
+  // COMPLETE COURSE BUNDLE — all programmes below in one payment. Set fee to "" to hide this card.
+  bundle: { name: "Complete Safarnama Education 5.0", note: "नीचे दिए गए सभी 11 programmes, एक साथ", fee: "₹11,000", amount: 11000, link: "" },
+
   // PROGRAMMES — one line each.
   //   name:     programme name
   //   duration: shown under the name ("" to hide)
@@ -40,7 +43,7 @@ window.SAFARNAMA = {
     { name: "Inner Child Healing", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
     { name: "Energy Cord Cutting", duration: "2 Days", fee: "₹999", amount: 999, link: "" },
     { name: "Forgiveness & Emotional Healing", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
-    { name: "Money Mastery Practices", duration: "", fee: "₹999", amount: 999, link: "" },
+    { name: "Money Mastery Practices", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
     { name: "121 Ritual", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
     { name: "Advanced Manifestation Meditation", duration: "5 Days", fee: "₹999", amount: 999, link: "" },
     { name: "The Science of Getting Rich (Advanced)", duration: "2 Months 20 Days", fee: "₹3,500", amount: 3500, link: "" },

@@ -43,9 +43,17 @@
       '<div class="prog-buy"><span class="fee">' + esc(item.fee) + '</span><a class="btn ' + (item.link ? "btn-primary" : "btn-ghost") + '" href="' + esc(href) + '"' + (item.link ? '' : ' target="_blank" rel="noopener"') +
       ' data-buy="' + esc(item.name) + '" data-amount="' + (Number(item.amount) || 0) + '">' + label + '</a></div></div>';
   }
+  var bBox = $("[data-bundle]"), B = S.bundle;
+  if (bBox && B && B.fee) {
+    var names = (S.programmes || []).map(function (x) { return "<span>" + esc(x.name) + "</span>"; }).join("");
+    var bHref = B.link || ("https://wa.me/" + (C.whatsapp || "") + "?text=" + encodeURIComponent("Hello! मुझे " + B.name + " (Complete Course, " + B.fee + ") join करना है।\nName:\nCity:"));
+    bBox.innerHTML = '<div class="bundle"><div class="bundle-head"><span class="badge">Best Value · Complete Course</span><h3>' + esc(B.name) + '</h3><p>' + esc(B.note || "") + '</p></div>' +
+      '<div class="ingredients">' + names + '</div>' +
+      '<div class="bundle-buy"><span class="fee">' + esc(B.fee) + '</span><a class="btn btn-gold" href="' + esc(bHref) + '"' + (B.link ? '' : ' target="_blank" rel="noopener"') + ' data-buy="' + esc(B.name) + '" data-amount="' + (Number(B.amount) || 0) + '">Complete Course Join करें</a></div></div>';
+  } else if (bBox) { bBox.hidden = true; }
   var pBox = $("[data-programmes]"); if (pBox) pBox.innerHTML = (S.programmes || []).map(function (x) { return card(x, "prog"); }).join("");
   var oBox = $("[data-one-to-one]"); if (oBox) oBox.innerHTML = (S.oneToOne || []).map(function (x) { return card(x, "1:1"); }).join("");
-  var anyLink = (S.programmes || []).concat(S.oneToOne || []).some(function (x) { return x.link; });
+  var anyLink = (S.programmes || []).concat(S.oneToOne || [], S.bundle ? [S.bundle] : []).some(function (x) { return x.link; });
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-buy]"); if (!b) return;
     track("InitiateCheckout", { content_name: b.getAttribute("data-buy"), value: Number(b.getAttribute("data-amount")) || undefined, currency: "INR" });
