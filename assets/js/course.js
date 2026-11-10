@@ -75,17 +75,33 @@
     else { a.removeAttribute("href"); a.setAttribute("aria-disabled", "true"); }
   });
 
+  /* ---------- special event banner ---------- */
+  var ev = S.event, evBox = $("[data-event]");
+  if (evBox) {
+    var evEnd = ev && ev.endsAt ? new Date(ev.endsAt + "+05:30") : null;
+    if (ev && ev.show && (!evEnd || new Date() <= evEnd)) {
+      var evHref = ev.link || ("https://wa.me/" + (C.whatsapp || "") + "?text=" + encodeURIComponent(ev.waText || ("Hello! मुझे " + ev.title + " join करना है।")));
+      evBox.innerHTML = '<div class="wrap event"><div class="event-img">' + (ev.image ? '<img src="' + esc(ev.image) + '" alt="' + esc(ev.title) + ' poster" loading="lazy">' : '') + '</div>' +
+        '<div class="event-body"><span class="eyebrow">Special Event</span><h2>' + esc(ev.title) + '</h2>' + (ev.subtitle ? '<p class="event-sub">' + esc(ev.subtitle) + '</p>' : '') +
+        '<ul class="event-meta"><li>🗓️ ' + esc(ev.date) + '</li>' + (ev.time ? '<li>🕥 ' + esc(ev.time) + '</li>' : '') + '<li>💻 Online</li></ul>' +
+        (ev.text ? '<p>' + esc(ev.text) + '</p>' : '') +
+        '<a class="btn btn-gold" href="' + esc(evHref) + '"' + (ev.link ? '' : ' target="_blank" rel="noopener"') + ' data-buy="' + esc(ev.title) + '" data-amount="0">' + esc(ev.button || "Join करें") + '</a></div></div>';
+      evBox.hidden = false;
+    } else { evBox.hidden = true; }
+  }
+
   /* ---------- testimonials ---------- */
   var sec = $("[data-testimonials]");
   if (sec) {
     var t = (S.testimonials || []).filter(function (x) { return x && x.text; });
     var shots = (S.screenshots || []).filter(Boolean);
+    var selfV = (S.selfVideos || []).filter(function (x) { return x && x.src; });
     var vids = (S.videos || []).map(function (line) {
       var parts = String(line).split("|");
       var m = String(parts[0]).match(/(?:youtu\.be\/|v=|shorts\/|embed\/|live\/)([A-Za-z0-9_-]{11})/);
       return m ? { id: m[1], vertical: /shorts\//.test(parts[0]), cap: (parts[1] || "").trim() } : null;
     }).filter(Boolean);
-    if (t.length || shots.length || vids.length) {
+    if (t.length || shots.length || vids.length || selfV.length) {
       sec.hidden = false;
       $("[data-t-text]", sec).innerHTML = t.map(function (x) {
         return '<figure class="testi"><div class="stars" aria-hidden="true">★★★★★</div><p>“' + esc(x.text) + '”</p><div class="who">' + esc(x.name) + (x.city ? "<span>" + esc(x.city) + "</span>" : "") + "</div></figure>";
@@ -93,7 +109,9 @@
       $("[data-t-shots]", sec).innerHTML = shots.map(function (src, i) {
         return '<figure class="tile shot"><img src="' + esc(src) + '" alt="Student review ' + (i + 1) + '" loading="lazy"></figure>';
       }).join("");
-      $("[data-t-videos]", sec).innerHTML = vids.map(function (v) {
+      $("[data-t-videos]", sec).innerHTML = selfV.map(function (v) {
+        return '<figure class="video vertical"><video controls preload="none" playsinline' + (v.poster ? ' poster="' + esc(v.poster) + '"' : '') + ' src="' + esc(v.src) + '"></video>' + (v.name ? "<figcaption>" + esc(v.name) + "</figcaption>" : "") + "</figure>";
+      }).join("") + vids.map(function (v) {
         return '<figure class="video' + (v.vertical ? " vertical" : "") + '"><button type="button" class="video-play" data-yt="' + v.id + '" aria-label="Play video' + (v.cap ? ": " + esc(v.cap) : "") + '">' +
           '<img src="https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg" alt="" loading="lazy"><span class="play" aria-hidden="true"></span></button>' +
           (v.cap ? "<figcaption>" + esc(v.cap) + "</figcaption>" : "") + "</figure>";

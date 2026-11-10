@@ -56,6 +56,22 @@ window.SAFARNAMA = {
     { name: "One to One Healing", duration: "3 घंटे", fee: "₹11,000", amount: 11000, link: "" }
   ],
 
+  // SPECIAL EVENT BANNER — shown below the hero until "endsAt" (India time), then hides itself.
+  // To show a new event, change these lines and the image. Set show: false to hide it.
+  event: {
+    show: true,
+    title: "11:11 Portal 2026",
+    subtitle: "Special Portal Activation Session",
+    date: "11 November 2026",
+    time: "सुबह 10:30 बजे से",
+    text: "Abundance, Health, Wealth, Happiness और Success manifest करने का एक powerful दिन। 11:11 – एक नई शुरुआत, नई ऊर्जा और नए संकल्पों का दिन!",
+    image: "assets/img/portal-1111.jpg",
+    endsAt: "2026-11-11T23:59",
+    button: "Session Join करें",
+    waText: "Hello! मुझे 11:11 Portal Activation Session (11 November) join करना है।",
+    link: ""
+  },
+
   // App store links. Leave "" while the app is not live yet ("coming soon" is shown).
   androidApp: "",
   iosApp: "",
@@ -64,6 +80,12 @@ window.SAFARNAMA = {
   //   "https://youtube.com/shorts/AbCdEfGhIjk | Geeta, Raipur",
   // The section stays hidden until at least one link is added.
   videos: [
+  ],
+
+  // VIDEO TESTIMONIALS HOSTED ON THIS WEBSITE (mp4 files in assets/video/)
+  // Use this until the videos are on YouTube; then move them to "videos" above and delete the file.
+  selfVideos: [
+    { src: "assets/video/saba-khan-testimonial.mp4", poster: "assets/img/saba-khan-poster.jpg", name: "Saba Khan" }
   ],
 
   // Optional written testimonials / screenshot images (same rules: only with permission)
