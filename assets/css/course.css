@@ -182,3 +182,4 @@ body.course{font-size:17px}
 .t-wrap .videos{grid-template-columns:repeat(auto-fill,minmax(240px,300px));justify-content:center}
 .t-wrap .videos{display:flex;flex-wrap:wrap;justify-content:center;gap:20px}
 .t-wrap .videos .video{width:min(300px,100%)}
+.c-hero h1 .kicker{display:flex;width:fit-content;font-family:var(--f-body);line-height:1.4;margin-bottom:18px}
