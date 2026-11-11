@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Safarnama Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Mulish:wght@400;600;700;800&family=Hind:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<header class="top">
+ <div class="brand"><img src="/assets/img/safarnama-logo-180.png" alt="" width="44" height="44"><div><b>Safarnama Admin</b><small id="who"></small></div></div>
+ <nav id="tabs" hidden>
+  <button data-tab="students" class="on">Students</button>
+  <button data-tab="classes">Classes</button>
+  <button data-tab="recordings">Recordings</button>
+  <button data-tab="payments">Payments <span id="unmatchedCount" class="badge" hidden></span></button>
+  <button data-tab="more">More</button>
+ </nav>
+ <button id="logout" class="link" hidden>Logout</button>
+</header>
+
+<main>
+ <!-- LOGIN -->
+ <section id="login" class="panel narrow">
+  <h1>Admin login</h1>
+  <p class="muted">Enter the admin email. We'll send a login code.</p>
+  <form id="emailForm"><label>Email<input type="email" id="email" required autocomplete="email"></label><button class="btn">Send code</button></form>
+  <form id="codeForm" hidden><label>Code from email<input id="code" inputmode="numeric" maxlength="8" required autocomplete="one-time-code"></label><button class="btn">Log in</button></form>
+  <p id="loginMsg" class="msg"></p>
+ </section>
+
+ <!-- STUDENTS -->
+ <section id="students" class="panel" hidden>
+  <div class="head"><h1>Students</h1><input id="studentSearch" placeholder="Search email, name or phone…"></div>
+  <details class="card add"><summary>+ Add a student (for cash / UPI / manual payments)</summary>
+   <form id="enrolForm" class="grid">
+    <label>Email *<input name="email" type="email" required></label>
+    <label>Name<input name="full_name"></label>
+    <label>Phone<input name="phone"></label>
+    <label>Programme *<select name="programme_id" required class="programmeSelect"></select></label>
+    <label>Batch<select name="batch_id" class="batchSelect"></select></label>
+    <label>Access until <small>(only for monthly)</small><input name="valid_until" type="date"></label>
+    <button class="btn">Add student</button>
+   </form>
+  </details>
+  <div class="tablewrap"><table><thead><tr><th>Student</th><th>Programme</th><th>Source</th><th>Access until</th><th>Added</th><th></th></tr></thead><tbody id="enrolRows"></tbody></table></div>
+  <p class="muted small" id="enrolCount"></p>
+ </section>
+
+ <!-- CLASSES -->
+ <section id="classes" class="panel" hidden>
+  <div class="head"><h1>Live classes</h1></div>
+  <details class="card add" open><summary>+ Schedule a class</summary>
+   <form id="classForm" class="grid">
+    <label>Programme *<select name="programme_id" required class="programmeSelect"></select></label>
+    <label>Title *<input name="title" required placeholder="Chakra Healing – Day 1"></label>
+    <label>Date & time (India) *<input name="starts_at" type="datetime-local" required></label>
+    <label>Duration (minutes)<input name="duration_min" type="number" value="90" min="15"></label>
+    <label>Zoom link<input name="zoom_url" type="url" placeholder="https://zoom.us/j/..."></label>
+    <label>Passcode<input name="zoom_passcode"></label>
+    <label>Batch<select name="batch_id" class="batchSelect"></select></label>
+    <label class="check"><input type="checkbox" name="repeat"> Repeat daily for <input name="repeat_days" type="number" value="3" min="2" max="90" class="tiny"> days</label>
+    <button class="btn">Save class</button>
+   </form>
+  </details>
+  <div class="tablewrap"><table><thead><tr><th>When</th><th>Class</th><th>Programme</th><th>Zoom</th><th></th></tr></thead><tbody id="classRows"></tbody></table></div>
+ </section>
+
+ <!-- RECORDINGS -->
+ <section id="recordings" class="panel" hidden>
+  <div class="head"><h1>Recordings</h1></div>
+  <div class="card">
+   <h2>Upload a class recording</h2>
+   <p class="muted">Students see it for 24 hours after the class ends, then it disappears automatically.</p>
+   <form id="uploadForm" class="grid">
+    <label>Class *<select name="class_id" id="recClass" required></select></label>
+    <label>Video file *<input type="file" name="file" accept="video/*" required></label>
+    <button class="btn">Upload</button>
+   </form>
+   <div id="uploadProgress" hidden><div class="bar"><span></span></div><p class="small muted" id="uploadText"></p></div>
+   <details class="small"><summary>Already uploaded in Bunny? Paste the video ID instead</summary>
+    <form id="pasteForm" class="grid"><label>Class<select name="class_id" class="recClassCopy"></select></label><label>Bunny video ID<input name="vid" required></label><button class="btn ghost">Save</button></form>
+   </details>
+  </div>
+  <div class="tablewrap"><table><thead><tr><th>Recording</th><th>Programme</th><th>Visible until</th><th>Status</th><th></th></tr></thead><tbody id="recRows"></tbody></table></div>
+ </section>
+
+ <!-- PAYMENTS -->
+ <section id="payments" class="panel" hidden>
+  <div class="head"><h1>Payments to check</h1></div>
+  <p class="muted">Razorpay payments are matched to a programme automatically. Payments listed here could not be matched (e.g. two programmes with the same price, or a 1:1 session). Choose the programme to enrol the student, or dismiss.</p>
+  <div class="tablewrap"><table><thead><tr><th>Payment</th><th>Buyer</th><th>Amount</th><th>Programme</th><th></th></tr></thead><tbody id="payRows"></tbody></table></div>
+  <div class="card">
+   <h2>Teach the matcher</h2>
+   <p class="muted small">Paste a Razorpay Payment Page ID (starts with <code>pl_</code>) and pick its programme. Future payments from that page are enrolled automatically.</p>
+   <form id="mapForm" class="grid"><label>Payment Page ID<input name="match_key" required placeholder="pl_XXXXXXXXXXXX"></label><label>Programme<select name="programme_id" class="programmeSelect" required></select></label><button class="btn ghost">Save</button></form>
+   <ul id="mapList" class="small"></ul>
+  </div>
+ </section>
+
+ <!-- MORE -->
+ <section id="more" class="panel" hidden>
+  <div class="head"><h1>More</h1></div>
+  <div class="card"><h2>Reset a student's devices</h2><p class="muted small">Each account works on 2 phones. Reset when a student changes phone.</p>
+   <form id="deviceForm" class="grid"><label>Student email<input name="email" type="email" required></label><button class="btn ghost">Find devices</button></form><ul id="deviceList" class="small"></ul></div>
+  <div class="card"><h2>Announcement on the app home screen</h2>
+   <form id="annForm" class="grid"><label class="wide">Message<input name="message" required maxlength="200" placeholder="🌈 Kal ki class 7 baje hogi"></label><button class="btn ghost">Post</button></form><ul id="annList" class="small"></ul></div>
+  <div class="card"><h2>Batches</h2>
+   <form id="batchForm" class="grid"><label>Name<input name="name" required placeholder="January 2027 Batch"></label><label>Starts on<input name="starts_on" type="date" required></label><button class="btn ghost">Add batch</button></form><ul id="batchList" class="small"></ul></div>
+ </section>
+</main>
+<div id="toast" role="status"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
+<script src="config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
