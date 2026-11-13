@@ -55,7 +55,7 @@
   }
 
   /* ---------------- tabs ---------------- */
-  const loaders = { students: loadStudents, classes: loadClasses, recordings: loadRecordings, payments: loadPayments, more: loadMore };
+  const loaders = { students: loadStudents, classes: loadClasses, recordings: loadRecordings, notify: loadNotify, payments: loadPayments, more: loadMore };
   function show(tab) {
     $$("nav button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
     Object.keys(loaders).forEach((k) => ($("#" + k).hidden = k !== tab));
@@ -167,8 +167,14 @@
   }
   async function saveRecording(class_id, vid) {
     const c = classes.find((x) => x.id === class_id);
-    const { error } = await sb.from("recordings").insert({ class_id, bunny_video_id: vid, title: c?.title || null });
+    const { data, error } = await sb.from("recordings").insert({ class_id, bunny_video_id: vid, title: c?.title || null }).select("id").single();
     if (error) throw error;
+    // Tell that programme's students the recording is ready (best effort)
+    if (c && data) {
+      sb.functions.invoke("send-push", { body: {
+        title: "🎬 नई recording आ गई", body: `${c.title} — अगले 24 घंटे तक app में देखें।`,
+        audience: "programme", target: c.programme_id, url: "/player/" + data.id } }).catch(() => {});
+    }
   }
   $("#uploadForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -207,6 +213,35 @@
     if (!confirm("Remove this recording from the app now?")) return;
     const { error } = await sb.from("recordings").delete().eq("id", id);
     if (error) return fail(error); toast("Removed"); loadRecordings();
+  });
+
+  /* ---------------- notify ---------------- */
+  const audienceSel = $("#pushAudience");
+  audienceSel.addEventListener("change", () => {
+    $("#pushProgWrap").hidden = audienceSel.value !== "programme";
+    $("#pushEmailWrap").hidden = audienceSel.value !== "email";
+  });
+  async function loadNotify() {
+    const { data, error } = await sb.from("notifications").select("*").order("created_at", { ascending: false }).limit(30);
+    if (error) throw error;
+    $("#pushRows").innerHTML = data.length ? data.map((n) => `<tr><td class="small">${when(n.created_at)}</td>
+      <td><b>${esc(n.title)}</b><small>${esc(n.body)}</small></td>
+      <td>${n.audience === "all" ? "All students" : n.audience === "programme" ? esc(progName(n.target)) : esc(n.target)}</td>
+      <td><span class="pill green">${n.sent_count}</span>${n.failed_count ? ` <span class="pill red">${n.failed_count} failed</span>` : ""}</td></tr>`).join("")
+      : '<tr class="empty"><td colspan="4">No notifications sent yet</td></tr>';
+  }
+  $("#pushForm").addEventListener("submit", async (e) => {
+    e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
+    const target = f.audience === "programme" ? f.target_programme : f.audience === "email" ? f.target_email.trim().toLowerCase() : null;
+    if (f.audience !== "all" && !target) return fail(new Error("Choose the programme or enter the email."));
+    const who = f.audience === "all" ? "ALL students" : f.audience === "programme" ? "students of " + progName(target) : target;
+    if (!confirm(`Send "${f.title}" to ${who}?`)) return;
+    const btn = e.target.querySelector("button"); btn.disabled = true; $("#pushResult").textContent = "Sending…";
+    const { data, error } = await sb.functions.invoke("send-push", { body: { title: f.title, body: f.body, audience: f.audience, target, url: f.url } });
+    btn.disabled = false;
+    if (error || data?.error) { $("#pushResult").textContent = ""; return fail(error || new Error(data.error)); }
+    $("#pushResult").textContent = data.recipients ? `Sent to ${data.sent} phone${data.sent === 1 ? "" : "s"}${data.failed ? ` (${data.failed} failed)` : ""}.` : "No phones to send to yet — students need to open the app and allow notifications.";
+    toast("Notification sent"); e.target.reset(); audienceSel.dispatchEvent(new Event("change")); loadNotify();
   });
 
   /* ---------------- payments ---------------- */
@@ -254,6 +289,8 @@
 
   /* ---------------- more: devices, announcements, batches ---------------- */
   async function loadMore() {
+    const { data: settings } = await sb.from("app_settings").select("key, value");
+    (settings || []).forEach((s) => { const el = $(`#versionForm [name="${s.key}"]`); if (el) el.value = s.value; });
     const [{ data: ann }] = await Promise.all([sb.from("announcements").select("*").order("created_at", { ascending: false }).limit(10)]);
     $("#annList").innerHTML = (ann || []).map((a) => `<li>${a.active ? "🟢" : "⚪"} ${esc(a.message)} <small class="muted">${day(a.created_at)}</small> <button class="link" data-toggle-ann="${a.id}" data-active="${a.active}">${a.active ? "hide" : "show"}</button></li>`).join("") || "<li class='muted'>None</li>";
     $("#batchList").innerHTML = batches.map((b) => `<li>${esc(b.name)} — starts ${day(b.starts_on)} ${b.active ? '<span class="pill green">current</span>' : `<button class="link" data-activate="${b.id}">make current</button>`}</li>`).join("");
@@ -270,6 +307,13 @@
     if (t.delDev) { await sb.from("devices").delete().eq("user_id", t.user).eq("device_id", t.delDev); toast("Device removed"); $("#deviceForm").requestSubmit(); }
     if (t.toggleAnn) { await sb.from("announcements").update({ active: t.active !== "true" }).eq("id", t.toggleAnn); loadMore(); }
     if (t.activate) { await sb.from("batches").update({ active: false }).neq("id", t.activate); await sb.from("batches").update({ active: true }).eq("id", t.activate); await loadLookups(); loadMore(); }
+  });
+  $("#versionForm").addEventListener("submit", async (e) => {
+    e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
+    if (!confirm("Students on older versions will be asked to update before using the app. Continue?")) return;
+    const rows = Object.entries(f).filter(([, v]) => v !== "").map(([key, value]) => ({ key, value: String(value).trim() }));
+    const { error } = await sb.from("app_settings").upsert(rows);
+    if (error) return fail(error); toast("Saved");
   });
   $("#annForm").addEventListener("submit", async (e) => {
     e.preventDefault(); const { error } = await sb.from("announcements").insert({ message: e.target.message.value.trim() });

@@ -18,6 +18,7 @@
   <button data-tab="students" class="on">Students</button>
   <button data-tab="classes">Classes</button>
   <button data-tab="recordings">Recordings</button>
+  <button data-tab="notify">Notify</button>
   <button data-tab="payments">Payments <span id="unmatchedCount" class="badge" hidden></span></button>
   <button data-tab="more">More</button>
  </nav>
@@ -90,6 +91,26 @@
   <div class="tablewrap"><table><thead><tr><th>Recording</th><th>Programme</th><th>Visible until</th><th>Status</th><th></th></tr></thead><tbody id="recRows"></tbody></table></div>
  </section>
 
+ <!-- NOTIFY -->
+ <section id="notify" class="panel" hidden>
+  <div class="head"><h1>Send a notification</h1></div>
+  <div class="card">
+   <p class="muted small">Appears on students' phones like any app notification (Swiggy, WhatsApp…). Only phones where the student allowed notifications will receive it.</p>
+   <form id="pushForm" class="grid">
+    <label class="wide">Title *<input name="title" required maxlength="80" placeholder="🌈 आज की class 7 बजे"></label>
+    <label class="wide">Message *<textarea name="body" required maxlength="300" rows="3" placeholder="Zoom link app में Live Classes पर मिलेगा। Join करना न भूलें!"></textarea></label>
+    <label>Send to<select name="audience" id="pushAudience"><option value="all">All students</option><option value="programme">Students of one programme</option><option value="email">One student (email)</option></select></label>
+    <label id="pushProgWrap" hidden>Programme<select name="target_programme" class="programmeSelect"></select></label>
+    <label id="pushEmailWrap" hidden>Student email<input name="target_email" type="email"></label>
+    <label>Opens<select name="url"><option value="/">Home</option><option value="/(tabs)/classes">Live Classes</option><option value="/(tabs)/programmes">Programmes</option></select></label>
+    <button class="btn gold">Send notification</button>
+   </form>
+   <p class="small muted" id="pushResult"></p>
+  </div>
+  <p class="muted small">Automatic: students also get a reminder 10 minutes before every class, and a "new recording" notification when you upload one.</p>
+  <div class="tablewrap"><table><thead><tr><th>Sent</th><th>Notification</th><th>To</th><th>Delivered</th></tr></thead><tbody id="pushRows"></tbody></table></div>
+ </section>
+
  <!-- PAYMENTS -->
  <section id="payments" class="panel" hidden>
   <div class="head"><h1>Payments to check</h1></div>
@@ -110,6 +131,9 @@
    <form id="deviceForm" class="grid"><label>Student email<input name="email" type="email" required></label><button class="btn ghost">Find devices</button></form><ul id="deviceList" class="small"></ul></div>
   <div class="card"><h2>Announcement on the app home screen</h2>
    <form id="annForm" class="grid"><label class="wide">Message<input name="message" required maxlength="200" placeholder="🌈 Kal ki class 7 baje hogi"></label><button class="btn ghost">Post</button></form><ul id="annList" class="small"></ul></div>
+  <div class="card"><h2>Force app update</h2>
+   <p class="muted small">Students on an older app version see "please update" until they install the latest from the store. Use only after a new store version is live.</p>
+   <form id="versionForm" class="grid"><label>Minimum Android version<input name="min_version_android" placeholder="1.0.0" pattern="\d+(\.\d+){0,2}"></label><label>Minimum iPhone version<input name="min_version_ios" placeholder="1.0.0" pattern="\d+(\.\d+){0,2}"></label><label>App Store link<input name="app_store_url" type="url" placeholder="https://apps.apple.com/..."></label><button class="btn ghost">Save</button></form></div>
   <div class="card"><h2>Batches</h2>
    <form id="batchForm" class="grid"><label>Name<input name="name" required placeholder="January 2027 Batch"></label><label>Starts on<input name="starts_on" type="date" required></label><button class="btn ghost">Add batch</button></form><ul id="batchList" class="small"></ul></div>
  </section>
