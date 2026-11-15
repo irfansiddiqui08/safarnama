@@ -31,7 +31,8 @@
   let loginEmail = "";
   $("#emailForm").addEventListener("submit", async (e) => {
     e.preventDefault(); loginEmail = $("#email").value.trim().toLowerCase();
-    const { error } = await sb.auth.signInWithOtp({ email: loginEmail, options: { shouldCreateUser: false } });
+    // Admin emails are listed in the database (admin_emails); the first login creates the account.
+    const { error } = await sb.auth.signInWithOtp({ email: loginEmail, options: { shouldCreateUser: true } });
     if (error) return ($("#loginMsg").textContent = error.message);
     $("#emailForm").hidden = true; $("#codeForm").hidden = false; $("#code").focus();
     $("#loginMsg").textContent = "";
@@ -48,7 +49,7 @@
     const { data: { user } } = await sb.auth.getUser();
     if (!user) return;
     const { data: isAdmin } = await sb.rpc("is_admin");
-    if (!isAdmin) { $("#loginMsg").textContent = "This email is not an admin."; await sb.auth.signOut(); return; }
+    if (!isAdmin) { $("#loginMsg").textContent = "This email is not an admin. Ask Irfan to add it to the admin list."; await sb.auth.signOut(); return; }
     $("#login").hidden = true; $("#tabs").hidden = false; $("#logout").hidden = false; $("#who").textContent = user.email;
     await loadLookups();
     show("students");
