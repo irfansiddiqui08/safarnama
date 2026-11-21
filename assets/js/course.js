@@ -37,26 +37,105 @@
       : "Hello! मुझे Safarnama Education 5.0" + (S.batchName ? " (" + S.batchName + ")" : "") + " में " + item.name + " join करना है।\nName:\nCity:";
     return "https://wa.me/" + (C.whatsapp || "") + "?text=" + encodeURIComponent(m);
   }
+  var ONLINE = !!(S.onlinePayment && S.checkoutUrl);
+  function payable(item, kind) { return ONLINE && kind !== "1:1" && item.id; }
   function card(item, kind) {
-    var href = item.link || waFor(item, kind), label = kind === "1:1" ? "Book करें" : "Join करें";
+    var label = kind === "1:1" ? "Book करें" : "Join करें";
+    var pay = payable(item, kind), href = pay ? "#join" : (item.link || waFor(item, kind)), ext = !pay && !item.link;
     return '<div class="prog"><div><h3>' + esc(item.name) + '</h3>' + (item.duration ? '<p class="dur">' + esc(item.duration) + '</p>' : '') + '</div>' +
-      '<div class="prog-buy"><span class="fee">' + esc(item.fee) + '</span><a class="btn ' + (item.link ? "btn-primary" : "btn-ghost") + '" href="' + esc(href) + '"' + (item.link ? '' : ' target="_blank" rel="noopener"') +
+      '<div class="prog-buy"><span class="fee">' + esc(item.fee) + '</span><a class="btn ' + (pay || item.link ? "btn-primary" : "btn-ghost") + '" href="' + esc(href) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') +
+      (pay ? ' data-checkout="' + esc(item.id) + '" data-fee="' + esc(item.fee) + '"' : '') +
       ' data-buy="' + esc(item.name) + '" data-amount="' + (Number(item.amount) || 0) + '">' + label + '</a></div></div>';
   }
   var bBox = $("[data-bundle]"), B = S.bundle;
   if (bBox && B && B.fee) {
     var names = (S.programmes || []).map(function (x) { return "<span>" + esc(x.name) + "</span>"; }).join("");
-    var bHref = B.link || ("https://wa.me/" + (C.whatsapp || "") + "?text=" + encodeURIComponent("Hello! मुझे " + B.name + " (Complete Course, " + B.fee + ") join करना है।\nName:\nCity:"));
+    var bPay = payable(B, "bundle");
+    var bHref = bPay ? "#join" : B.link || ("https://wa.me/" + (C.whatsapp || "") + "?text=" + encodeURIComponent("Hello! मुझे " + B.name + " (Complete Course, " + B.fee + ") join करना है।\nName:\nCity:"));
     bBox.innerHTML = '<div class="bundle"><div class="bundle-head"><span class="badge">Best Value · Complete Course</span><h3>' + esc(B.name) + '</h3><p>' + esc(B.note || "") + '</p></div>' +
       '<div class="ingredients">' + names + '</div>' +
-      '<div class="bundle-buy"><span class="fee">' + esc(B.fee) + '</span><a class="btn btn-gold" href="' + esc(bHref) + '"' + (B.link ? '' : ' target="_blank" rel="noopener"') + ' data-buy="' + esc(B.name) + '" data-amount="' + (Number(B.amount) || 0) + '">Complete Course Join करें</a></div></div>';
+      '<div class="bundle-buy"><span class="fee">' + esc(B.fee) + '</span><a class="btn btn-gold" href="' + esc(bHref) + '"' + (bPay || B.link ? '' : ' target="_blank" rel="noopener"') + (bPay ? ' data-checkout="' + esc(B.id) + '" data-fee="' + esc(B.fee) + '"' : '') + ' data-buy="' + esc(B.name) + '" data-amount="' + (Number(B.amount) || 0) + '">Complete Course Join करें</a></div></div>';
   } else if (bBox) { bBox.hidden = true; }
   var pBox = $("[data-programmes]"); if (pBox) pBox.innerHTML = (S.programmes || []).map(function (x) { return card(x, "prog"); }).join("");
   var oBox = $("[data-one-to-one]"); if (oBox) oBox.innerHTML = (S.oneToOne || []).map(function (x) { return card(x, "1:1"); }).join("");
-  var anyLink = (S.programmes || []).concat(S.oneToOne || [], S.bundle ? [S.bundle] : []).some(function (x) { return x.link; });
+  var anyLink = ONLINE || (S.programmes || []).concat(S.oneToOne || [], S.bundle ? [S.bundle] : []).some(function (x) { return x.link; });
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-buy]"); if (!b) return;
     track("InitiateCheckout", { content_name: b.getAttribute("data-buy"), value: Number(b.getAttribute("data-amount")) || undefined, currency: "INR" });
+  });
+
+  /* ---------- online checkout (Razorpay) ---------- */
+  var co = null, coItem = null, rzpLoad = null;
+  function loadRzp() {
+    if (window.Razorpay) return Promise.resolve();
+    if (!rzpLoad) rzpLoad = new Promise(function (ok, bad) {
+      var sc = document.createElement("script"); sc.src = "https://checkout.razorpay.com/v1/checkout.js";
+      sc.onload = ok; sc.onerror = function () { rzpLoad = null; bad(new Error("load")); }; document.head.appendChild(sc);
+    });
+    return rzpLoad;
+  }
+  function openCheckout(btn) {
+    coItem = { id: btn.getAttribute("data-checkout"), name: btn.getAttribute("data-buy"), fee: btn.getAttribute("data-fee"), amount: Number(btn.getAttribute("data-amount")) || 0 };
+    if (!co) {
+      co = document.createElement("div"); co.className = "co-wrap"; co.hidden = true;
+      co.innerHTML = '<form class="co-box" novalidate><button type="button" class="co-x" aria-label="Close">×</button>' +
+        '<p class="co-kicker">Safarnama Education 5.0</p><h3 class="co-title"></h3><p class="co-fee"></p>' +
+        '<label>पूरा नाम<input name="name" autocomplete="name" required maxlength="80"></label>' +
+        '<label>Email<input name="email" type="email" autocomplete="email" required maxlength="254"></label>' +
+        '<p class="co-hint">इसी email से आप Safarnama app में login करेंगे। ध्यान से लिखें।</p>' +
+        '<label>Mobile (WhatsApp)<input name="phone" type="tel" inputmode="numeric" autocomplete="tel" required maxlength="14"></label>' +
+        '<p class="co-err" role="alert" hidden></p>' +
+        '<button type="submit" class="btn btn-gold co-pay">Payment करें</button>' +
+        '<p class="co-note">Secure payment by Razorpay · UPI, Cards, Netbanking</p></form>';
+      document.body.appendChild(co);
+      var close = function () { co.hidden = true; document.body.classList.remove("co-open"); };
+      co.addEventListener("click", function (e) { if (e.target === co || e.target.closest(".co-x")) close(); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !co.hidden) close(); });
+      $("form", co).addEventListener("submit", submitCheckout);
+    }
+    $(".co-title", co).textContent = coItem.name; $(".co-fee", co).textContent = coItem.fee || "";
+    $(".co-err", co).hidden = true; co.hidden = false; document.body.classList.add("co-open");
+    loadRzp().catch(function () {});
+    setTimeout(function () { var i = $("input[name=name]", co); if (i) i.focus(); }, 50);
+  }
+  function coError(msg) { var e = $(".co-err", co); e.textContent = msg; e.hidden = false; }
+  function submitCheckout(e) {
+    e.preventDefault();
+    var f = e.target, btn = $(".co-pay", f);
+    var data = { programme_id: coItem.id, name: f.name.value.trim(), email: f.email.value.trim(), phone: f.phone.value.trim() };
+    if (data.name.length < 2) return coError("कृपया अपना पूरा नाम लिखें");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email)) return coError("कृपया सही email लिखें");
+    if (!/^[6-9]\d{9}$/.test(data.phone.replace(/\D/g, "").replace(/^(91|0)(?=\d{10}$)/, ""))) return coError("कृपया 10 अंकों का mobile number लिखें");
+    $(".co-err", co).hidden = true; btn.disabled = true; btn.textContent = "कृपया रुकें…";
+    var done = function () { btn.disabled = false; btn.textContent = "Payment करें"; };
+    Promise.all([
+      fetch(S.checkoutUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
+        .then(function (r) { return r.json().then(function (j) { if (!r.ok || !j.order_id) throw new Error(j.error || "error"); return j; }); }),
+      loadRzp()
+    ]).then(function (res) {
+      var o = res[0];
+      var rzp = new window.Razorpay({
+        key: o.key_id, order_id: o.order_id, amount: o.amount, currency: o.currency || "INR",
+        name: "Safarnama Education", description: o.programme,
+        image: "https://safarnama.club/assets/img/safarnama-logo-180.png",
+        prefill: { name: data.name, email: data.email, contact: data.phone },
+        theme: { color: "#D99A0B" },
+        handler: function (resp) {
+          location.href = "thank-you.html?programme=" + encodeURIComponent(o.programme) + "&amount=" + Math.round(o.amount / 100) + "&payment=" + encodeURIComponent(resp.razorpay_payment_id || "");
+        },
+        modal: { ondismiss: done }
+      });
+      rzp.on("payment.failed", function () { done(); coError("Payment नहीं हो पाया। कृपया दोबारा try करें।"); });
+      co.hidden = true; document.body.classList.remove("co-open");
+      rzp.open();
+    }).catch(function (err) {
+      done();
+      coError(err && err.message && err.message !== "error" && err.message !== "load" ? err.message : "Payment शुरू नहीं हो पाया। Internet check करके दोबारा try करें या WhatsApp करें।");
+    });
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-checkout]"); if (!b) return;
+    e.preventDefault(); openCheckout(b);
   });
 
   /* ---------- general join buttons (scroll to the fee list) ---------- */
@@ -133,6 +212,6 @@
     var q = new URLSearchParams(location.search), amt = Number(q.get("amount")) || 0;
     if (!seen && anyLink) track("Purchase", { content_name: q.get("programme") || "Safarnama Education 5.0", value: amt, currency: "INR" });
     var w = $("[data-confirm-wa]");
-    if (w) w.href = "https://wa.me/" + (C.whatsapp || "") + "?text=" + encodeURIComponent("Hello! मैंने Safarnama Education 5.0" + (S.batchName ? " (" + S.batchName + ")" : "") + " का payment कर दिया है।\nName:\nPayment ID:");
+    if (w) w.href = "https://wa.me/" + (C.whatsapp || "") + "?text=" + encodeURIComponent("Hello! मैंने Safarnama Education 5.0" + (S.batchName ? " (" + S.batchName + ")" : "") + " (" + (q.get("programme") || "") + ") का payment कर दिया है।\nName:\nPayment ID: " + (q.get("payment") || ""));
   }
 })();

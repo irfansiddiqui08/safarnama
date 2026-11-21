@@ -183,3 +183,22 @@ body.course{font-size:17px}
 .t-wrap .videos{display:flex;flex-wrap:wrap;justify-content:center;gap:20px}
 .t-wrap .videos .video{width:min(300px,100%)}
 .c-hero h1 .kicker{display:flex;width:fit-content;font-family:var(--f-body);line-height:1.4;margin-bottom:18px}
+
+/* ---------- online checkout form ---------- */
+body.co-open{overflow:hidden}
+.co-wrap{position:fixed;inset:0;z-index:200;background:rgba(42,29,22,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.co-wrap[hidden]{display:none!important}
+.co-box{position:relative;background:var(--ivory,#fffaf0);border-radius:18px;max-width:420px;width:100%;padding:26px 22px 18px;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:calc(100vh - 32px);overflow:auto}
+.co-x{position:absolute;top:8px;right:10px;border:0;background:none;font-size:1.8rem;line-height:1;cursor:pointer;color:var(--ink);padding:6px}
+.co-kicker{margin:0;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:var(--green,#2f6b3a)}
+.co-title{margin:.2em 2rem .1em 0;font-size:1.3rem}
+.co-fee{margin:0 0 14px;font-weight:800;font-size:1.15rem;color:var(--brown)}
+.co-box label{display:block;font-weight:700;font-size:.9rem;margin:10px 0 0}
+.co-box input{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:12px 14px;border:1.5px solid #d9c9a8;border-radius:10px;font:inherit;font-size:1rem;background:#fff;color:var(--ink)}
+.co-box input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft)}
+.co-hint{margin:6px 0 0;font-size:.82rem;color:#7a5a2a}
+.co-err{margin:12px 0 0;padding:9px 12px;border-radius:9px;background:#fde8e4;color:#8a1f11;font-size:.9rem;font-weight:700}
+.co-err[hidden]{display:none}
+.co-pay{width:100%;margin-top:16px}
+.co-pay[disabled]{opacity:.7;cursor:wait}
+.co-note{margin:10px 0 0;text-align:center;font-size:.78rem;color:#7a6a58}

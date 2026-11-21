@@ -27,27 +27,35 @@ window.SAFARNAMA = {
   // Optional seat line, e.g. "Only 50 seats". Leave "" for the default "Seats Limited".
   seatsText: "",
 
+  // ---------- ONLINE PAYMENT (Razorpay checkout on this page) ----------
+  // true  = "Join" asks for name/email/phone and opens Razorpay. After payment the app unlocks automatically.
+  // false = "Join" opens WhatsApp instead (use this if payments ever need to be paused).
+  // Prices are charged from the app database, so change a price in the admin panel too.
+  onlinePayment: false,
+  checkoutUrl: "https://mtcvkfyxxkurinfloazu.supabase.co/functions/v1/create-order",
+
   // COMPLETE COURSE BUNDLE — all programmes below in one payment. Set fee to "" to hide this card.
-  bundle: { name: "Complete Safarnama Education 5.0", note: "नीचे दिए गए सभी 11 programmes, एक साथ", fee: "₹11,000", amount: 11000, link: "" },
+  bundle: { id: "complete", name: "Complete Safarnama Education 5.0", note: "नीचे दिए गए सभी 11 programmes, एक साथ", fee: "₹11,000", amount: 11000, link: "" },
 
   // PROGRAMMES — one line each.
+  //   id:       programme code used by the app — do not change
   //   name:     programme name
   //   duration: shown under the name ("" to hide)
   //   fee:      fee text exactly as it should appear
   //   amount:   fee in rupees, numbers only (used for ad tracking; 0 if unsure)
   //   link:     Razorpay payment link for this programme. While "", its Join button opens WhatsApp.
   programmes: [
-    { name: "Commando Training – Project 60", duration: "60 Days (2 Months)", fee: "₹999 / month", amount: 999, link: "" },
-    { name: "The Power (Shakti)", duration: "2 Months", fee: "₹2,100", amount: 2100, link: "" },
-    { name: "Chakra Healing & Balancing", duration: "7 Days", fee: "₹999", amount: 999, link: "" },
-    { name: "Inner Child Healing", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
-    { name: "Energy Cord Cutting", duration: "2 Days", fee: "₹999", amount: 999, link: "" },
-    { name: "Forgiveness & Emotional Healing", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
-    { name: "Money Mastery Practices", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
-    { name: "121 Ritual", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
-    { name: "Advanced Manifestation Meditation", duration: "5 Days", fee: "₹999", amount: 999, link: "" },
-    { name: "The Science of Getting Rich (Advanced)", duration: "2 Months 20 Days", fee: "₹3,500", amount: 3500, link: "" },
-    { name: "Magic Book Practice (Daily)", duration: "Monthly", fee: "₹999 / month", amount: 999, link: "" }
+    { id: "project-60", name: "Commando Training – Project 60", duration: "60 Days (2 Months)", fee: "₹999 / month", amount: 999, link: "" },
+    { id: "the-power", name: "The Power (Shakti)", duration: "2 Months", fee: "₹2,100", amount: 2100, link: "" },
+    { id: "chakra-healing", name: "Chakra Healing & Balancing", duration: "7 Days", fee: "₹999", amount: 999, link: "" },
+    { id: "inner-child", name: "Inner Child Healing", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
+    { id: "cord-cutting", name: "Energy Cord Cutting", duration: "2 Days", fee: "₹999", amount: 999, link: "" },
+    { id: "forgiveness", name: "Forgiveness & Emotional Healing", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
+    { id: "money-mastery", name: "Money Mastery Practices", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
+    { id: "ritual-121", name: "121 Ritual", duration: "3 Days", fee: "₹999", amount: 999, link: "" },
+    { id: "manifestation", name: "Advanced Manifestation Meditation", duration: "5 Days", fee: "₹999", amount: 999, link: "" },
+    { id: "science-getting-rich", name: "The Science of Getting Rich (Advanced)", duration: "2 Months 20 Days", fee: "₹3,500", amount: 3500, link: "" },
+    { id: "magic-book", name: "Magic Book Practice (Daily)", duration: "Monthly", fee: "₹999 / month", amount: 999, link: "" }
   ],
 
   // ONE-TO-ONE HEALING SESSIONS — booked on WhatsApp unless a payment link is added.
