@@ -1,22 +1,21 @@
-/* Sarava Parihaara — brand system taken from the logo and packaging:
-   deep walnut brown, turmeric gold, neem green on warm ivory.
-   Layout idea: editorial product storytelling, split hero, generous white space. */
+/* Safarnama theme (Nov 2026): navy #061D49 primary, royal gold #D9A430 accent,
+   pearl white #FFFDF6 background. Dark gold #8A6410 for small text on light backgrounds. */
 :root{
-  --brown:#3b2014;
-  --brown-2:#5a3422;
-  --gold:#d99a0b;
-  --gold-soft:#f6e3b4;
-  --green:#2f5d27;
-  --green-soft:#e6efdf;
-  --ivory:#fbf7ef;
+  --brown:#061d49;
+  --brown-2:#12306b;
+  --gold:#d9a430;
+  --gold-soft:#f6e7c1;
+  --green:#8a6410;
+  --green-soft:#f6ecd2;
+  --ivory:#fffdf6;
   --paper:#ffffff;
-  --ink:#2a1d16;
-  --muted:#6f6058;
-  --line:#e8dccb;
+  --ink:#0b1a36;
+  --muted:#4f5b73;
+  --line:#e6e1d3;
   --f-display:"Fraunces",Georgia,"Times New Roman",serif;
   --f-body:"Mulish",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --r:14px;
-  --shadow:0 10px 30px -14px rgba(59,32,20,.35);
+  --shadow:0 10px 30px -14px rgba(6,29,73,.35);
   color-scheme:light;
 }
 *,*::before,*::after{box-sizing:border-box}
@@ -35,12 +34,12 @@ p{margin:0 0 1em}
 .narrow{max-width:68ch}
 .section{padding:clamp(48px,7vw,96px) 0}
 .section.alt{background:var(--paper)}
-.section.dark{background:var(--brown);color:#f3e9dc}
+.section.dark{background:var(--brown);color:#eaf0fa}
 .section.dark h2,.section.dark h3{color:#fff}
 .eyebrow{display:inline-block;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--green);margin-bottom:.8em}
 .dark .eyebrow{color:var(--gold)}
 .lead{font-size:1.15rem;color:var(--muted)}
-.dark .lead{color:#e0cfbd}
+.dark .lead{color:#c9d4e8}
 .center{text-align:center}
 .center .narrow{margin-inline:auto}
 
@@ -50,7 +49,7 @@ p{margin:0 0 1em}
 .btn-primary{background:var(--brown);color:#fff}
 .btn-primary:hover{background:var(--brown-2);color:#fff}
 .btn-gold{background:var(--gold);color:var(--brown)}
-.btn-gold:hover{background:#e8ab1c;color:var(--brown)}
+.btn-gold:hover{background:#e6b54a;color:var(--brown)}
 .btn-ghost{border-color:var(--brown);color:var(--brown);background:transparent}
 .btn-ghost:hover{background:var(--brown);color:#fff}
 .btn-wa{background:#1f9d55;color:#fff}
@@ -59,9 +58,9 @@ p{margin:0 0 1em}
 .btn-block{width:100%}
 
 /* topbar + header */
-.topbar{background:var(--brown);color:#f3e2c7;font-size:.82rem;text-align:center;padding:7px 12px;letter-spacing:.03em}
+.topbar{background:var(--brown);color:#f6e7c1;font-size:.82rem;text-align:center;padding:7px 12px;letter-spacing:.03em}
 .topbar b{color:var(--gold)}
-.site-header{position:sticky;top:0;z-index:50;background:rgba(251,247,239,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.site-header{position:sticky;top:0;z-index:50;background:rgba(255,253,246,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .nav{display:flex;align-items:center;gap:20px;height:76px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--brown)}
 .brand img{width:54px;height:54px}
@@ -222,8 +221,8 @@ figure{margin:0}
 .prose ul{padding-left:1.2em}
 
 /* footer */
-.site-footer{background:#2a160d;color:#d9c8b6;padding:64px 0 28px;font-size:.93rem}
-.site-footer a{color:#f0e2cf;text-decoration:none}
+.site-footer{background:#04122e;color:#c9d4e8;padding:64px 0 28px;font-size:.93rem}
+.site-footer a{color:#eef2f9;text-decoration:none}
 .site-footer a:hover{color:var(--gold)}
 .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:32px}
 @media (max-width:860px){.foot-grid{grid-template-columns:1fr 1fr}}
@@ -231,7 +230,7 @@ figure{margin:0}
 .site-footer h4{color:#fff;font-family:var(--f-body);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
 .site-footer ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
 .foot-brand img{width:84px;margin-bottom:12px}
-.foot-bottom{border-top:1px solid #4a2f22;margin-top:40px;padding-top:20px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:.82rem;color:#a99484}
+.foot-bottom{border-top:1px solid #16336a;margin-top:40px;padding-top:20px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;font-size:.82rem;color:#9aa6bd}
 .motto{font-family:var(--f-display);font-style:italic;color:var(--gold);font-size:1.15rem}
 
 /* floating whatsapp */
@@ -239,7 +238,7 @@ figure{margin:0}
 .wa-float svg{width:30px;height:30px;fill:#fff}
 
 /* cart drawer */
-.drawer-bg{position:fixed;inset:0;background:rgba(30,15,8,.45);z-index:90;opacity:0;pointer-events:none;transition:opacity .2s}
+.drawer-bg{position:fixed;inset:0;background:rgba(4,14,36,.45);z-index:90;opacity:0;pointer-events:none;transition:opacity .2s}
 .drawer{position:fixed;top:0;right:0;height:100%;width:min(440px,100%);background:var(--ivory);z-index:100;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(0,0,0,.2)}
 .cart-open .drawer{transform:none}
 .cart-open .drawer-bg{opacity:1;pointer-events:auto}
@@ -286,19 +285,19 @@ figure{margin:0}
 .video .video-play,.video iframe{display:block;width:100%;aspect-ratio:16/9;border:0;padding:0;background:#000;cursor:pointer;position:relative}
 .video.vertical .video-play,.video.vertical iframe{aspect-ratio:9/16}
 .video img{width:100%;height:100%;object-fit:cover;opacity:.9}
-.video .play{position:absolute;inset:0;margin:auto;width:66px;height:66px;border-radius:50%;background:rgba(59,32,20,.85);box-shadow:0 6px 20px rgba(0,0,0,.35)}
+.video .play{position:absolute;inset:0;margin:auto;width:66px;height:66px;border-radius:50%;background:rgba(6,29,73,.85);box-shadow:0 6px 20px rgba(0,0,0,.35)}
 .video .play::after{content:"";position:absolute;left:26px;top:20px;border-left:20px solid #fff;border-top:13px solid transparent;border-bottom:13px solid transparent}
 .video-play:hover .play{background:var(--green)}
 .video figcaption{background:var(--paper);padding:10px 14px;font-weight:700;font-size:.88rem;color:var(--brown)}
 /* social icons + map */
 .socials{display:flex;flex-wrap:wrap;gap:10px}
-.socials a{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#4a2f22;color:#f0e2cf;transition:background .15s,color .15s}
+.socials a{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#16336a;color:#eef2f9;transition:background .15s,color .15s}
 .socials a[hidden]{display:none}
 .socials a:hover{background:var(--gold);color:var(--brown)}
 .socials svg{width:19px;height:19px;fill:currentColor}
 .socials.dark-icons a{background:var(--green-soft);color:var(--green)}
 .socials.dark-icons a:hover{background:var(--brown);color:#fff}
-.map{border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:#e9e4da}
+.map{border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:#e6e3db}
 .map iframe{display:block;width:100%;height:420px;border:0}
 @media (max-width:600px){.map iframe{height:320px}}
 .foot-bottom .heart{color:#e0533d}

@@ -119,7 +119,7 @@
         name: "Safarnama Education", description: o.programme,
         image: "https://safarnama.club/assets/img/safarnama-logo-180.png",
         prefill: { name: data.name, email: data.email, contact: data.phone },
-        theme: { color: "#D99A0B" },
+        theme: { color: "#d9a430" },
         handler: function (resp) {
           location.href = "thank-you.html?programme=" + encodeURIComponent(o.programme) + "&amount=" + Math.round(o.amount / 100) + "&payment=" + encodeURIComponent(resp.razorpay_payment_id || "");
         },
