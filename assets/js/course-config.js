@@ -31,7 +31,7 @@ window.SAFARNAMA = {
   // true  = "Join" asks for name/email/phone and opens Razorpay. After payment the app unlocks automatically.
   // false = "Join" opens WhatsApp instead (use this if payments ever need to be paused).
   // Prices are charged from the app database, so change a price in the admin panel too.
-  onlinePayment: false,
+  onlinePayment: true,
   checkoutUrl: "https://mtcvkfyxxkurinfloazu.supabase.co/functions/v1/create-order",
 
   // COMPLETE COURSE BUNDLE — all programmes below in one payment. Set fee to "" to hide this card.
